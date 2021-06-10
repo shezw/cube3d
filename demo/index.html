@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cube3d</title>
+
+    <style type="text/css" media="screen">
+
+        body{ background:#232325;}
+        .main{ padding: 200px 400px }
+
+    </style>
+
+    <link rel="stylesheet" href="../dist/cube3d.css">
+
+</head>
+<body>
+
+<div class="main"></div>
+
+
+</body>
+<script src="../dist/vdom.core.js"></script>
+<script src="../dist/cube3d.js"></script>
+
+
+<script>
+
+    var head = new C3dNode(200,200,200);
+
+
+    var face = new C3dCube(150,150,150, [205,175,145,1] );
+
+    face.Sides[1].vd.append("<img src='../assets/images/face.png'/>");
+
+
+    // var i = 0;
+    // var test = setInterval( function () {
+    //
+    //     var c = i++;
+    //     head.rotateTo(15*c,30*c,45*c);
+    //
+    //     if( i > 10 ) clearInterval(test);
+    // },1000 )
+
+
+    // Bind Events
+
+    // head.container.on('mouseenter',function (vd) {
+    //     head.rotate(15,30,60);
+    // });
+
+
+    var hat = new C3dCube(210,210,20, [240,230,210,1]).move(-30,-30,-85);
+    var hatDecoration = new C3dCube(150,150,30, [100,90,85,1]).move(0,0,-110);
+    var hatTop = new C3dCube(150,150,40,[240,230,210,1]).move(0,0,-145);
+
+    VD('.main').append(head.container);
+
+    head.cube.append(face.container);
+    head.cube.append(hat.container);
+    head.cube.append(hatDecoration.container);
+    head.cube.append(hatTop.container);
+
+    head.container.on('click',function (vd) {
+        head.rotate(15,30,60);
+    });
+
+
+</script>
+
+
+</html>
