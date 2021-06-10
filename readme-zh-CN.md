@@ -19,22 +19,22 @@
 所以，你可以在这个div内以传统的HTML编辑方式进行更多的尝试。
 效果如同下面这张截图(我的博客首页).
 
-![Image text](../assets/images/intro.png)
+![Image text](assets/images/intro.png)
 
 ### 如何使用
 
 #### 1. 在头部引入 cube3d.css
 
 ```html
-<link rel="stylesheet" href="../dist/cube3d.css">
+<link rel="stylesheet" href="dist/cube3d.css">
 </head>
 ```
     
 #### 2 引入vdom.core.js , cube3d.js
 ```html
 </body>
-<script src="../dist/vdom.core.js"></script>
-<script src="../dist/cube3d.js"></script>
+<script src="dist/vdom.core.js"></script>
+<script src="dist/cube3d.js"></script>
 ```
 
 #### 3 创建Cube
@@ -72,4 +72,4 @@ vdom('body').append( cube.container );
 
 ### 示例
 
-[demo](../demo/index.html)
+[demo](demo/index.html)

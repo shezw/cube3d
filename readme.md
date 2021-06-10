@@ -18,22 +18,22 @@ This library is mainly developed to add Lightweight interesting pseudo 3D conten
 The function of this library is based on CSS3 3D transformation, in which each cube is composed of 6 div planes.
 So, you can try more traditional HTML editing methods in the div. Just like the screenshot of my blog below.
 
-![Image text](../assets/images/intro.png)
+![Image text](assets/images/intro.png)
 
 ### Usage
 
 #### 1. include cube3d.css
 
 ```html
-<link rel="stylesheet" href="../dist/cube3d.css">
+<link rel="stylesheet" href="dist/cube3d.css">
 </head>
 ```
     
 #### 2 include vdom.core.js , cube3d.js
 ```html
 </body>
-<script src="../dist/vdom.core.js"></script>
-<script src="../dist/cube3d.js"></script>
+<script src="dist/vdom.core.js"></script>
+<script src="dist/cube3d.js"></script>
 ```
 
 #### 3 create a Cube instance
@@ -71,4 +71,4 @@ vdom('body').append( cube.container );
 
 ### Demo
 
-[demo](../demo/index.html)
+[demo](demo/index.html)
