@@ -7,8 +7,29 @@
     <style type="text/css" media="screen">
 
         body{ background:#232325;}
-        .main{ padding: 200px 400px }
+        .main{
+            margin: 10px auto;
+            padding: 200px 0 100px 0;
+        }
+        .main .content{
+            width: 160px;
+            height: 160px;
+            margin: auto;
+        }
 
+        .panel {
+            text-align: center;
+            padding: 50px 0;
+        }
+
+        .panel .description{
+            color: #888;
+        }
+
+        .panel button{
+            padding: 10px 30px;
+            font-size:16pt;
+        }
     </style>
 
     <link rel="stylesheet" href="../dist/cube3d.css">
@@ -16,8 +37,22 @@
 </head>
 <body>
 
-<div class="main"></div>
+<div class="main">
+    <div class="content">
 
+    </div>
+</div>
+
+<div class="panel">
+    <h3 class="description">Animations:</h3>
+    <button id="animate-jump-button">
+        Jump
+    </button>
+
+    <button id="animate-spiral-button">
+        Spiral
+    </button>
+</div>
 
 </body>
 <script src="../dist/vdom.core.js"></script>
@@ -26,13 +61,10 @@
 
 <script>
 
-    var head = new C3dNode(200,200,200);
+    var head = new C3dNode(160,160,160);
 
-
-    var face = new C3dCube(150,150,150, [205,175,145,1] );
-
-    face.Sides[1].vd.append("<img src='../assets/images/face.png'/>");
-
+    var face = new C3dCube(120,120,120, [205,175,145,1] );
+        face.front().setImageUrl('../assets/images/face.png');
 
     // var i = 0;
     // var test = setInterval( function () {
@@ -43,7 +75,6 @@
     //     if( i > 10 ) clearInterval(test);
     // },1000 )
 
-
     // Bind Events
 
     // head.container.on('mouseenter',function (vd) {
@@ -51,19 +82,33 @@
     // });
 
 
-    var hat = new C3dCube(210,210,20, [240,230,210,1]).move(-30,-30,-85);
-    var hatDecoration = new C3dCube(150,150,30, [100,90,85,1]).move(0,0,-110);
-    var hatTop = new C3dCube(150,150,40,[240,230,210,1]).move(0,0,-145);
+    var hat = new C3dCube(168,168,16, [240,230,210,1]);
+    var hatDecoration = new C3dCube(120,120,24, [100,90,85,1]);
+    var hatTop = new C3dCube(120,120,32,[240,230,210,1]);
 
-    VD('.main').append(head.container);
+    VD('.main .content').append(head.container);
 
-    head.cube.append(face.container);
-    head.cube.append(hat.container);
-    head.cube.append(hatDecoration.container);
-    head.cube.append(hatTop.container);
+    face.insertTo(head);
+    hat.insertTo(head).adjust(0,0,-120);
+    hatDecoration.insertTo(head).adjust(0,0,-128);
+    hatTop.insertTo(head).adjust(0,0,-152);
+
+    // head.cube.append(face.container);
+    // head.cube.append(hat.container);
+    // head.cube.append(hatDecoration.container);
+    // head.cube.append(hatTop.container);
 
     head.container.on('click',function (vd) {
         head.rotate(15,30,60);
+    });
+
+
+    VD('#animate-spiral-button').on('click',function(vd){
+        head.animate3d(C3dAnimates.spiral);
+    });
+
+    VD('#animate-jump-button').on('click',function(vd){
+        head.animate3d(C3dAnimates.jump,750);
     });
 
 

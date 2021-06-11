@@ -2,13 +2,10 @@
 .Cube3dContainer {
     width: 0;
     height: 0;
-    /*-webkit-perspective: 10000px;*/
-    /*-moz-perspective: 10000px;*/
-    /*-ms-perspective: 10000px;*/
-    /*perspective: 10000px;*/
 }
 
 .Cube3dCube{
+    /*perspective: 1000px;*/
     width: 0;
     height: 0;
     position: relative;

@@ -12,10 +12,88 @@
  */
 "use strict";
 
-var C3dThreeDAnimates = {
+var C3dAnimates = {
 
+    jump:{
+        name:'jump',
+        curve:"ease-out",
+        // linear	规定以相同速度开始至结束的过渡效果（等于 cubic-bezier(0,0,1,1)）。
+        // ease	规定慢速开始，然后变快，然后慢速结束的过渡效果（cubic-bezier(0.25,0.1,0.25,1)）。
+        // ease-in	规定以慢速开始的过渡效果（等于 cubic-bezier(0.42,0,1,1)）。
+        // ease-out	规定以慢速结束的过渡效果（等于 cubic-bezier(0,0,0.58,1)）。
+        // ease-in-out	规定以慢速开始和结束的过渡效果（等于 cubic-bezier(0.42,0,0.58,1)）。
+        // cubic-bezier(n,n,n,n)
+        // cubic-bezier(0.215, 0.61, 0.355, 1)
+        frames:{
+            20:{ transform: {
+                translateY:"25%"
+                }},
+            40:{ transform: {
+                translateY:"-150%",
+                    scaleY:1.5,
+                    scaleZ:0.5
+                }},
+            60:{ transform: {
+                translateY:"35%",
+                    scaleY:0.75,
+                    scaleX:1.25,
+                    scaleZ:1
+                }},
+            80:{ transform: {
+                translateY:"-75%",
+                    scaleY:1.5,
+                    scaleZ:0.5
+                }},
+            100:{ transform: {
+                translateY:"0",
+                    scaleY:1,
+                    scaleZ:1
+                }}
+        }
+    },
+
+    spiral:{
+        name:'spiral',
+        curve:"ease-out",
+        frames:{
+            0:{transform: {
+                    rotateZ:45,
+                    scaleY:1,
+                    scaleX:1,
+                    scaleZ:1
+                }
+            },
+            50:{ transform: {
+                    translateY:"-100%",
+                    rotateZ:540+45,
+                    scaleY:1.5,
+                    scaleX:1,
+                    scaleZ:1
+                }
+                },
+            100:{ transform: {
+                    rotateZ:720+45,
+                    scaleX:1,
+                    scaleY:1,
+                    scaleZ:1
+                }}
+        }
+    }
 };
 
+
+/**
+ * Offset of Parent and child node
+ * @param X
+ * @param Y
+ * @param Z
+ * @constructor
+ */
+function C3dOffset( X,Y,Z ) {
+    this.x = X;
+    this.y = Y;
+    this.z = Z;
+}
 
 
 /**
@@ -141,7 +219,6 @@ C3dSide.prototype.rend = function () {
         case 4:
             styles.transform =  "rotateZ(90deg) rotateX(90deg) " +
                                 "translateX("+(-(this.h-this.w)/2)+"px) translateZ(" + (this.e-(this.w/2)) + "px)";
-            console.log(styles.transform);
             break; // translateX(-"+((z-y)/2)+"px) translateZ("+(x-(y/2))+"px)
         case 5:
             styles.transform =  "rotateX(180deg) " +
@@ -154,6 +231,18 @@ C3dSide.prototype.rend = function () {
 
 
 function C3dNode( X,Y,Z ){
+
+    /**
+     * @type {C3dNode[]}
+     */
+    this.children = [];
+
+    /**
+     * @type {C3dNode}
+     */
+    this.parent   = null;
+
+    this.offset   = new C3dOffset(0,0,0);
 
     /** Size **/
     this.X = X;
@@ -191,6 +280,55 @@ function C3dNode( X,Y,Z ){
     this.rend();
 }
 
+/**
+ *
+ * @param node {C3dNode}
+ */
+C3dNode.prototype.addChild = function( node ){
+
+    node.parent = this;
+}
+
+/**
+ *
+ * @param offset {C3dOffset}
+ */
+C3dNode.prototype.setOffset = function( offset ){
+
+    this.offset.x = offset instanceof C3dOffset ? offset.x : (this.parent.X-this.X)/2;
+    this.offset.y = offset instanceof C3dOffset ? offset.y : (this.parent.Y-this.Y)/2;
+    this.offset.z = offset instanceof C3dOffset ? offset.z : (this.parent.Z-this.Z)/2;
+
+    console.log(this.offset)
+}
+
+C3dNode.prototype.adjust = function( x, y, z ){
+
+    this.offset.x += (x || 0);
+    this.offset.y += (y || 0);
+    this.offset.z += (z || 0);
+
+    this.rend();
+}
+
+/**
+ *
+ * @param parentNode {C3dNode}
+ * @param offset {C3dOffset}
+ * @return {this}
+ */
+C3dNode.prototype.insertTo = function( parentNode, offset ){
+
+    this.parent = parentNode;
+    this.setOffset(offset);
+
+    parentNode.children.push(this);
+    parentNode.cube.append( this.container );
+
+    this.rend();
+
+    return this;
+}
 
 C3dNode.prototype.move = function(x,y,z,time,curve) {
 
@@ -263,6 +401,9 @@ C3dNode.prototype.transform = function(translate,rotate,scale,time,curve){
     return this.rend();
 };
 
+/**
+ * @return {C3dNode}
+ */
 C3dNode.prototype.rend = function(){
 
     var styles = {
@@ -270,9 +411,9 @@ C3dNode.prototype.rend = function(){
         transform: "rotateX("+ this.transform.rotateX +"deg) rotateY("+ this.transform.rotateY +"deg) rotateZ("+ this.transform.rotateZ +"deg)"
     };
 
-    if( this.transform.translateX !== 0 || this.transform.translateY !== 0 || this.transform.translateZ !== 0 ){
-        styles.transform += " translateX( "+ this.transform.translateX +"px ) translateY( "+ this.transform.translateY +"px ) translateZ( "+ this.transform.translateZ +"px )";
-    }
+    // if( this.transform.translateX !== 0 || this.transform.translateY !== 0 || this.transform.translateZ !== 0 ){
+        styles.transform += " translateX( "+ (this.transform.translateX + this.offset.x )+"px ) translateY( " +( this.transform.translateY + this.offset.y) +"px ) translateZ( " + (this.transform.translateZ + this.offset.z) +"px )";
+    // }
 
     if( (this.transform.scaleX * this.transform.scaleY * this.transform.scaleX) !== 1 ){
         styles.transform += " scaleX( "+ this.transform.scaleX +" ) scaleY( "+ this.transform.scaleY +" ) scaleZ( "+ this.transform.scaleZ +" )";
@@ -285,8 +426,70 @@ C3dNode.prototype.rend = function(){
     return this;
 };
 
+C3dNode.prototype.createAnimateCss = function(frames,name){
 
+    var css = "@keyframes "+name+"{\n";
+    for( var k in frames ){
+        css += k+'%{\n\t';
+        for( var m in frames[k]){
+            if ( m === 'transform' ){
+                css += "transform: ";
+                for ( var key in this.transform ){
+                    if( frames[k][m].hasOwnProperty(key) ){
+                        css += (key + "(" + frames[k][m][key]);
+                        if(typeof frames[k][m][key] === 'string'){
+                            css += ") ";
+                        }else{
+                            css += {translateX:'px',translateY:'px',translateZ:'px',rotateX:'deg',rotateY:'deg',rotateZ:'deg',scaleX:'',scaleY:'',scaleZ:''}[key];
+                            css += ") ";
+                        }
+                    }else{
+                        css += (key + "(" + this.transform[key]);
+                        css += {translateX:'px',translateY:'px',translateZ:'px',rotateX:'deg',rotateY:'deg',rotateZ:'deg',scaleX:'',scaleY:'',scaleZ:''}[key];
+                        css += ") ";
+                    }
+                }
+                css += ";";
+            }else{
+                css += m+":"+frames[k][m]+";\n";
+            }
+        }
+        css += "\n}";
+    }
+    css += "}\n";
 
+    return css;
+}
+
+C3dNode.prototype.animate3d = function ( animate, optionsOrDuration, call ) {
+
+    this.transform_tmp = this.transform;
+
+    var options  = typeof optionsOrDuration =='object' ? optionsOrDuration : {};
+    var duration = typeof optionsOrDuration =='object' ? (optionsOrDuration.duration || 500)+"ms" : (optionsOrDuration || 500)+"ms";
+
+    var delay    = options.delay    ? options.delay+"ms" : '0ms' ;
+    var count    = options.count    || 1 ;
+    var end      = options.end      || 'backwards';
+    var alternate= options.alternate|| 'normal';
+    var transformorigin = options.transformorigin|| '';
+    var speed    = animate.curve    || 'ease-out';
+
+    if(typeof speed=='object'){ speed = "cubic-bezier("+speed[0]+","+speed[1]+","+speed[2]+","+speed[3]+","+")" ;}
+    if(options.infinite){ count = 'infinite'; }
+
+    var animateHASH = 'C3dA_' +Aps.dom.storagehash.hash(JSON.stringify([animate,duration,options]));
+
+    var css = "{ animation-name:" + animateHASH+";animation-duration:" + duration+";animation-timing-function: " + speed+";animation-delay: " + delay+";animation-iteration-count: " + count+";animation-direction: "+alternate+";"
+        + "animation-fill-mode: "+end+";"
+        + (transformorigin?"transform-origin: "+transformorigin+";":"");
+    css+= "}\n";
+
+    var animateCLASS = Aps.dom.styles.css[animateHASH] ? animateHASH : Aps.dom.style(animateHASH,css+this.createAnimateCss(animate.frames,animateHASH));
+
+    this.cube.animateCSS(animateCLASS,1,call);
+    return this;
+}
 
 /**
  * Generate a new object of Cube3d
@@ -299,6 +502,9 @@ C3dNode.prototype.rend = function(){
 function C3dCube(X,Y,Z, RGBAColor){
 
     this.contrast = 20;  // 明暗对比度
+    this.children = [];
+    this.parent = null;
+    this.offset = new C3dOffset(0,0,0);
 
     /** Size **/
     this.X = X;

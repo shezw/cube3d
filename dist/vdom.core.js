@@ -719,7 +719,7 @@ Aps.dom   = { // ! dom操作 快捷方式 VD,vdom 虚拟元素 ,VL,vlist 虚拟�
         }
     },
     uuid:function(){
-        var i = "v_" + (new Date()).getTime()+parseInt(Math.random()*10000);//弹窗索引
+        var i = "v_" + Math.floor(Math.random()*1000) + (new Date()).getTime()+Math.floor(Math.random()*1000);//弹窗索引
         return vdom("#"+i) ? this.uuid() : i;
     }
 };
